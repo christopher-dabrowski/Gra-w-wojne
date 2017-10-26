@@ -3,7 +3,7 @@
 #include <time.h>
 #include <string.h>
 
-static int ROZMIAR_TALII = 52;
+#define ROZMIAR_TALII  52
 
 enum Kolory
 {
@@ -51,6 +51,7 @@ void Graj(struct Karta gracz[ROZMIAR_TALII], struct Karta komputer[ROZMIAR_TALII
 int main()
 {
 	srand((uint)time(0));
+    
     
     struct Karta gracz[ROZMIAR_TALII];
     struct Karta komputer[ROZMIAR_TALII];
@@ -100,11 +101,11 @@ void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALI
     
     for (int i=0; i<ROZMIAR_TALII/2; i++)
     {
-        gracz1[i] = talia[i];
+        *gracz1++ = talia[i];
     }
     for (int i=ROZMIAR_TALII/2; i<ROZMIAR_TALII; i++)
     {
-        gracz2[i] = talia[i];
+        *gracz2++ = talia[i];
     }
 }
 
