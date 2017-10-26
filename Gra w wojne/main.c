@@ -3,7 +3,7 @@
 #include <time.h>
 #include <string.h>
 
-#define ROZMIAR_TALII  52
+const int ROZMIAR_TALII = 52;
 
 enum Kolory
 {
@@ -76,9 +76,8 @@ void Graj(struct Karta gracz[ROZMIAR_TALII], struct Karta komputer[ROZMIAR_TALII
     
     struct Karta wystawionaG = gracz[0];
     struct Karta wystawionaK = komputer[0];
-    
-    stol[liczbaKartNaStole++] = wystawionaG;
-    stol[liczbaKartNaStole++] = wystawionaK;
+    liczbaKartGracza--;
+    liczbaKartKomputera--;
     
     for (int i=1; i<52; i++)
     {
@@ -86,9 +85,23 @@ void Graj(struct Karta gracz[ROZMIAR_TALII], struct Karta komputer[ROZMIAR_TALII
         komputer[i-1] = komputer[i];
     }
     
+    stol[liczbaKartNaStole++] = wystawionaG;
+    stol[liczbaKartNaStole++] = wystawionaK;
+    
     if (wystawionaG.wartosc > wystawionaK.wartosc)
     {
-        
+        while (liczbaKartNaStole > 0)
+        {
+            gracz[liczbaKartGracza++] = stol[--liczbaKartNaStole];
+        }
+    }
+    if (wystawionaG.wartosc < wystawionaK.wartosc)
+    {
+        while (liczbaKartNaStole > 0)
+        {
+            liczbaKartNaStole--;
+            komputer[liczbaKartKomputera++] = stol[liczbaKartNaStole];
+        }
     }
     
 }
