@@ -51,20 +51,82 @@ const char * KolorToString(enum Kolory kolor);
 const char* WartoscToString(enum Wartosci wartosc);
 char* KartaToString(struct Karta karta ,char nazwa[]);
 void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALII]);
-char Graj(bool autoplay);
+char Graj(int delay);
 void PrzesunWLewo(struct Karta tab[], int rozmiar);
+void WyczyscWejscie(void);
 
 
 int main()
 {
 	puts("Krzysztof Dabrowski gr. 1I1\nProjekt Gra w wojne\n-----------------------------------------------------\n");
-
+    
+    int opoznienieRozgrywki = 1000;
+    char decyzja;
+    bool ponow;
+    
 	srand((unsigned int)time(0));
-
-	
-
-    Graj(false);
-
+    
+    puts("Komputerowa wersja znanej gry karcianej - gry w wojne\nSterowanie: Aby wylozyc karte podaj dowolny klawisz  (najwygodniej ENTER)\nW dowolnej chwili mozesz wlaczyc tryb automatyczny podajac \"a\" lub \"f\"\n");
+    do
+    {
+        ponow = false;
+        puts("Aby zagrac jedna gre wybierz: 1\n"
+             "Aby zagrac kilka partii wybierz: 2\n"
+             "Aby zmienic szybkosc trybu automatycznego wybierz: 3\n");
+        decyzja = getchar();
+        WyczyscWejscie();
+        
+        if (decyzja == '1')
+        {
+            Graj(opoznienieRozgrywki);
+        }
+        else if(decyzja == '2')
+        {
+            puts("Not implemented");
+            return 1;
+        }
+        else if (decyzja == '3')
+        {
+            ponow = true;
+            bool nieWczytano;
+            do
+            {
+                nieWczytano = false;
+                puts("0 - Bardzo szybko\n1 - Szybko\n2 - Normalnie\n3 - wolno");
+                char szybkosc = getchar();
+                WyczyscWejscie();
+                switch (szybkosc)
+                {
+                    case '0':
+                        opoznienieRozgrywki = 1;
+                        break;
+                    case '1':
+                        opoznienieRozgrywki = 500;
+                        break;
+                    case '2':
+                        opoznienieRozgrywki = 1000;
+                        break;
+                    case '3':
+                        opoznienieRozgrywki = 2000;
+                        break;
+                    default:
+                        puts("Nierozpoznany znak. Sproboj ponownie");
+                        nieWczytano = true;
+                        break;
+                }
+            } while (nieWczytano);
+        }
+        else if (decyzja == 'q')
+            return 0;
+        else
+        {
+            puts("Nierozpoznany znak. Sproboj ponownie");
+            ponow = true;
+        }
+    } while (ponow);
+    
+    
+    
 	
 	return 0;
 }
@@ -74,8 +136,14 @@ int Losowa(int mini, int maxi)
 	return mini + rand() % (maxi - mini);
 }
 
+void WyczyscWejscie()
+{
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);
+}
 
-char Graj(bool autoplay)
+
+char Graj(int delay)
 {
 	struct Karta gracz[ROZMIAR_TALII];
 	struct Karta komputer[ROZMIAR_TALII];
@@ -83,6 +151,9 @@ char Graj(bool autoplay)
     struct Karta stol[52];
     int liczbaKartNaStole = 0;
     char kartaS1[20], kartaS2[20];
+    bool autoplay = false;
+    
+    puts("Dowolny klawisz wyklada karte");
 
 	Rozdaj(gracz, komputer);
     
@@ -90,13 +161,14 @@ char Graj(bool autoplay)
     {
 		if (autoplay)
         #ifdef _WIN32
-            Sleep(1000);
+            Sleep(delay);
         #else
-            sleep(1000);
+            usleep(delay*1000);
         #endif
 		else
 		{
 			char input = getchar();
+            //WyczyscWejscie();
 			if (input == 'q')
 				exit(0);
 			if (input == 'f' || input == 'a')
