@@ -4,7 +4,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-const int ROZMIAR_TALII = 52;
+//const int ROZMIAR_TALII = 52;
+#define ROZMIAR_TALII 52
+#pragma warning(disable : 4996)  
 
 enum Kolory
 {
@@ -37,8 +39,6 @@ struct Karta
 	enum Wartosci wartosc;
 };
 
-
-
 int Losowa(int mini, int maxi);
 void Resetuj(struct Karta *talia);
 void Tasuj(struct Karta *talia);
@@ -46,20 +46,15 @@ const char * KolorToString(enum Kolory kolor);
 const char* WartoscToString(enum Wartosci wartosc);
 char* KartaToString(struct Karta karta ,char nazwa[]);
 void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALII]);
-void Graj(struct Karta gracz[ROZMIAR_TALII], struct Karta komputer[ROZMIAR_TALII], int liczbaKartGracza, int liczbaKartKomputera);
+char Graj();
 void PrzesunWLewo(struct Karta tab[], int rozmiar);
 
 
 int main()
 {
-	srand((uint)time(0));
-    
-    struct Karta gracz[ROZMIAR_TALII];
-    struct Karta komputer[ROZMIAR_TALII];
-    
-    Rozdaj(gracz, komputer);
-    //puts(KartaToString(komputer[0]));
-    Graj(gracz, komputer, ROZMIAR_TALII/2, ROZMIAR_TALII/2);
+	srand((unsigned int)time(0));
+
+    Graj();
 
 	
 	return 0;
@@ -70,18 +65,38 @@ int Losowa(int mini, int maxi)
 	return mini + rand() % (maxi - mini);
 }
 
-void Graj(struct Karta gracz[ROZMIAR_TALII], struct Karta komputer[ROZMIAR_TALII], int liczbaKartGracza, int liczbaKartKomputera)
+char Graj()
 {
-    char kartaS1[20], kartaS2[20];
+	struct Karta gracz[ROZMIAR_TALII];
+	struct Karta komputer[ROZMIAR_TALII];
+	int liczbaKartGracza = ROZMIAR_TALII / 2, liczbaKartKomputera = ROZMIAR_TALII / 2;
     struct Karta stol[52];
     int liczbaKartNaStole = 0;
+    char kartaS1[20], kartaS2[20];
     bool wojna = false;
+
+	Rozdaj(gracz, komputer);
     
     while (liczbaKartGracza>0 && liczbaKartKomputera>0)
     {
         getchar();
         
-        
+		if (liczbaKartGracza == 0 && liczbaKartKomputera == 0)
+		{
+			puts("Remis");
+			return 'R';
+		}
+		if (liczbaKartGracza == 0)
+		{
+			puts("Przegrales gre");
+			return 'K';
+		}
+		if (liczbaKartKomputera == 0)
+		{
+			puts("Wygrales gre");
+			return 'G';
+		}
+
         struct Karta wystawionaG = gracz[0];
         struct Karta wystawionaK = komputer[0];
         liczbaKartGracza--;
@@ -112,14 +127,21 @@ void Graj(struct Karta gracz[ROZMIAR_TALII], struct Karta komputer[ROZMIAR_TALII
         {
             puts("Wojna!\n");
             wojna = true;
+
+			if (liczbaKartGracza == 0 && liczbaKartKomputera == 0)
+			{
+				puts("Remis");
+				return 'R';
+			}
             if (liczbaKartGracza == 0)
             {
                 puts("Przegrales gre");
-                return;
+                return 'K';
             }
             if (liczbaKartKomputera == 0)
             {
                 puts("Wygrales gre");
+				return 'G';
             }
             stol[liczbaKartNaStole++] = gracz[0];
             stol[liczbaKartNaStole++] = komputer[0];
@@ -129,6 +151,8 @@ void Graj(struct Karta gracz[ROZMIAR_TALII], struct Karta komputer[ROZMIAR_TALII
             PrzesunWLewo(komputer, ROZMIAR_TALII);
         }
     }
+
+	return 'R';
 }
 
 void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALII])
