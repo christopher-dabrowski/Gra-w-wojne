@@ -4,6 +4,11 @@
 #include <string.h>
 #include <stdbool.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 //const int ROZMIAR_TALII = 52;
 #define ROZMIAR_TALII 52
 #pragma warning(disable : 4996)  
@@ -73,13 +78,15 @@ char Graj()
     struct Karta stol[52];
     int liczbaKartNaStole = 0;
     char kartaS1[20], kartaS2[20];
-    bool wojna = false;
 
 	Rozdaj(gracz, komputer);
     
-    while (liczbaKartGracza>0 && liczbaKartKomputera>0)
+    while (true)
     {
-        getchar();
+		char input = getchar();
+		if (input == 'q')
+			exit(0);
+		//Sleep(1000); //Wersja Windowsowa
         
 		if (liczbaKartGracza == 0 && liczbaKartKomputera == 0)
 		{
@@ -112,21 +119,18 @@ char Graj()
         if (wystawionaG.wartosc > wystawionaK.wartosc)
         {
             puts("Wygrywasz\n");
-            wojna = false;
             while (liczbaKartNaStole > 0)
                 gracz[liczbaKartGracza++] = stol[--liczbaKartNaStole];
         }
         if (wystawionaG.wartosc < wystawionaK.wartosc)
         {
             puts("Komputer wygrywa\n");
-            wojna = false;
             while (liczbaKartNaStole > 0)
                 komputer[liczbaKartKomputera++] = stol[--liczbaKartNaStole];
         }
         if (wystawionaG.wartosc == wystawionaK.wartosc)
         {
             puts("Wojna!\n");
-            wojna = true;
 
 			if (liczbaKartGracza == 0 && liczbaKartKomputera == 0)
 			{
