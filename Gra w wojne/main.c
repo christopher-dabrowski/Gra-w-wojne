@@ -89,7 +89,11 @@ char Graj(bool autoplay)
     while (true)
     {
 		if (autoplay)
-			Sleep(1000);
+        #ifdef _WIN32
+            Sleep(1000);
+        #else
+            sleep(1000);
+        #endif
 		else
 		{
 			char input = getchar();
