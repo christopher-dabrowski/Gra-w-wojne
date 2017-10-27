@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <stdbool.h>
 
 const int ROZMIAR_TALII = 52;
 
@@ -43,21 +44,21 @@ void Resetuj(struct Karta *talia);
 void Tasuj(struct Karta *talia);
 const char * KolorToString(enum Kolory kolor);
 const char* WartoscToString(enum Wartosci wartosc);
-const char* KartaToString(struct Karta karta);
+char* KartaToString(struct Karta karta ,char nazwa[]);
 void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALII]);
 void Graj(struct Karta gracz[ROZMIAR_TALII], struct Karta komputer[ROZMIAR_TALII], int liczbaKartGracza, int liczbaKartKomputera);
+void PrzesunWLewo(struct Karta tab[], int rozmiar);
 
 
 int main()
 {
 	srand((uint)time(0));
     
-    
     struct Karta gracz[ROZMIAR_TALII];
     struct Karta komputer[ROZMIAR_TALII];
     
     Rozdaj(gracz, komputer);
-    puts(KartaToString(komputer[0]));
+    //puts(KartaToString(komputer[0]));
     Graj(gracz, komputer, ROZMIAR_TALII/2, ROZMIAR_TALII/2);
 
 	
@@ -71,39 +72,63 @@ int Losowa(int mini, int maxi)
 
 void Graj(struct Karta gracz[ROZMIAR_TALII], struct Karta komputer[ROZMIAR_TALII], int liczbaKartGracza, int liczbaKartKomputera)
 {
+    char kartaS1[20], kartaS2[20];
     struct Karta stol[52];
     int liczbaKartNaStole = 0;
+    bool wojna = false;
     
-    struct Karta wystawionaG = gracz[0];
-    struct Karta wystawionaK = komputer[0];
-    liczbaKartGracza--;
-    liczbaKartKomputera--;
-    
-    for (int i=1; i<52; i++)
+    while (liczbaKartGracza>0 && liczbaKartKomputera>0)
     {
-        gracz[i-1] = gracz[i];
-        komputer[i-1] = komputer[i];
-    }
-    
-    stol[liczbaKartNaStole++] = wystawionaG;
-    stol[liczbaKartNaStole++] = wystawionaK;
-    
-    if (wystawionaG.wartosc > wystawionaK.wartosc)
-    {
-        while (liczbaKartNaStole > 0)
+        getchar();
+        
+        
+        struct Karta wystawionaG = gracz[0];
+        struct Karta wystawionaK = komputer[0];
+        liczbaKartGracza--;
+        liczbaKartKomputera--;
+        PrzesunWLewo(gracz, ROZMIAR_TALII);
+        PrzesunWLewo(komputer, ROZMIAR_TALII);
+        
+        printf("%s %-14d%s %d\n%-20s%s\n", "Gracz", liczbaKartGracza, "Komputer", liczbaKartKomputera, KartaToString(wystawionaG, kartaS1), KartaToString(wystawionaK, kartaS2));
+        
+        stol[liczbaKartNaStole++] = wystawionaG;
+        stol[liczbaKartNaStole++] = wystawionaK;
+        
+        if (wystawionaG.wartosc > wystawionaK.wartosc)
         {
-            gracz[liczbaKartGracza++] = stol[--liczbaKartNaStole];
+            puts("Wygrywasz\n");
+            wojna = false;
+            while (liczbaKartNaStole > 0)
+                gracz[liczbaKartGracza++] = stol[--liczbaKartNaStole];
+        }
+        if (wystawionaG.wartosc < wystawionaK.wartosc)
+        {
+            puts("Komputer wygrywa\n");
+            wojna = false;
+            while (liczbaKartNaStole > 0)
+                komputer[liczbaKartKomputera++] = stol[--liczbaKartNaStole];
+        }
+        if (wystawionaG.wartosc == wystawionaK.wartosc)
+        {
+            puts("Wojna!\n");
+            wojna = true;
+            if (liczbaKartGracza == 0)
+            {
+                puts("Przegrales gre");
+                return;
+            }
+            if (liczbaKartKomputera == 0)
+            {
+                puts("Wygrales gre");
+            }
+            stol[liczbaKartNaStole++] = gracz[0];
+            stol[liczbaKartNaStole++] = komputer[0];
+            liczbaKartGracza--;
+            liczbaKartKomputera--;
+            PrzesunWLewo(gracz, ROZMIAR_TALII);
+            PrzesunWLewo(komputer, ROZMIAR_TALII);
         }
     }
-    if (wystawionaG.wartosc < wystawionaK.wartosc)
-    {
-        while (liczbaKartNaStole > 0)
-        {
-            liczbaKartNaStole--;
-            komputer[liczbaKartKomputera++] = stol[liczbaKartNaStole];
-        }
-    }
-    
 }
 
 void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALII])
@@ -143,6 +168,12 @@ void Tasuj(struct Karta *talia)
 		talia[i] = talia[j];
 		talia[j] = tmp;
 	}
+}
+
+void PrzesunWLewo(struct Karta tab[], int rozmiar)
+{
+    for (int i=1; i<rozmiar; i++)
+        tab[i-1] = tab[i];
 }
 
 const char* KolorToString(enum Kolory kolor)
@@ -198,14 +229,19 @@ const char* WartoscToString(enum Wartosci wartosc)
     }
 }
 
-const char* KartaToString(struct Karta karta)
+char * KartaToString(struct Karta karta ,char nazwa[])
 {
-    static char wynik[20];
-    strcpy(wynik, WartoscToString(karta.wartosc));
-    strcat(wynik, " ");
-    strcat(wynik, KolorToString(karta.kolor));
+//    static char wynik[20];
+//    strcpy(wynik, WartoscToString(karta.wartosc));
+//    strcat(wynik, " ");
+//    strcat(wynik, KolorToString(karta.kolor));
+//
+//    return wynik;
+    strcpy(nazwa, WartoscToString(karta.wartosc));
+    strcat(nazwa, " ");
+    strcat(nazwa, KolorToString(karta.kolor));
     
-    return wynik;
+    return nazwa;
 }
 
 
