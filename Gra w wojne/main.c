@@ -51,15 +51,19 @@ const char * KolorToString(enum Kolory kolor);
 const char* WartoscToString(enum Wartosci wartosc);
 char* KartaToString(struct Karta karta ,char nazwa[]);
 void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALII]);
-char Graj();
+char Graj(bool autoplay);
 void PrzesunWLewo(struct Karta tab[], int rozmiar);
 
 
 int main()
 {
+	puts("Krzysztof Dabrowski gr. 1I1\nProjekt Gra w wojne\n-----------------------------------------------------\n");
+
 	srand((unsigned int)time(0));
 
-    Graj();
+	
+
+    Graj(false);
 
 	
 	return 0;
@@ -70,7 +74,8 @@ int Losowa(int mini, int maxi)
 	return mini + rand() % (maxi - mini);
 }
 
-char Graj()
+
+char Graj(bool autoplay)
 {
 	struct Karta gracz[ROZMIAR_TALII];
 	struct Karta komputer[ROZMIAR_TALII];
@@ -83,11 +88,17 @@ char Graj()
     
     while (true)
     {
-		char input = getchar();
-		if (input == 'q')
-			exit(0);
-		//Sleep(1000); //Wersja Windowsowa
-        
+		if (autoplay)
+			Sleep(1000);
+		else
+		{
+			char input = getchar();
+			if (input == 'q')
+				exit(0);
+			if (input == 'f' || input == 'a')
+				autoplay = true;
+		}
+		
 		if (liczbaKartGracza == 0 && liczbaKartKomputera == 0)
 		{
 			puts("Remis");
