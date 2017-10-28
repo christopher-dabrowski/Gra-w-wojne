@@ -44,29 +44,29 @@ struct Karta
 	enum Wartosci wartosc;
 };
 
-int Losowa(int mini, int maxi);
-void Resetuj(struct Karta *talia);
-void Tasuj(struct Karta *talia);
-const char * KolorToString(enum Kolory kolor);
-const char* WartoscToString(enum Wartosci wartosc);
-char* KartaToString(struct Karta karta ,char nazwa[]);
-void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALII]);
-char Graj(int delay);
-void WyczyscWejscie(void);
+int Losowa(int mini, int maxi); //Zwraca losowa liczbe z przedzialu [mini, maxi)
+void Resetuj(struct Karta *talia); //Uzupelnia talie wszystkimi kartami
+void Tasuj(struct Karta *talia); //Ustawia karty w losowej kolejnosci
+const char * KolorToString(enum Kolory kolor); //Zwraca nazwe koloru
+const char* WartoscToString(enum Wartosci wartosc); //Zwraca nazwe wartosci
+char* KartaToString(struct Karta karta ,char nazwa[]); //Zwraca wartosc i kolor karty
+void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALII]); //Uzupelnia dwie dablice kart pelna talia w losowej kolejnosci 
+char Graj(int delay); //Symuluje jedna rozgrywke. Zwraca 'G' 'K' 'R' w zaleznosci od tego kto wygral 
+void WyczyscWejscie(void); //Czyta znaki ze standardowego wejscia dopuki nie jest puste
 
 
 int main()
 {
 	puts("Krzysztof Dabrowski gr. 1I1\nProjekt Gra w wojne\n-----------------------------------------------------\n");
     
-    int opoznienieRozgrywki = 1000;
-    char decyzja;
+    int opoznienieRozgrywki = 1000; //Czas przerwy w trybie auto
+    char decyzja; //Na decyzje uzytkownika
     bool ponow;
     
-	srand((unsigned int)time(0));
+	srand((unsigned int)time(0)); //Ustawienie ziarna dla liczb pseudolosowych
     
     puts("Komputerowa wersja znanej gry karcianej - gry w wojne\nSterowanie: Aby wylozyc karte podaj dowolny klawisz  (najwygodniej ENTER)\nW dowolnej chwili mozesz wlaczyc tryb automatyczny podajac \"a\" lub \"f\"\n");
-    do
+    do //Wybor trybu rozgrywki i ustawienia
     {
         ponow = false;
         puts("Aby zagrac jedna gre wybierz: 1\n"
@@ -99,9 +99,10 @@ int main()
 					WyczyscWejscie();
 			} while (nieWczytano);
 			
-			for (int i = 1, wygrane = 0, przegrane = 0; i <= liczbaGier; i++)
+			int wygrane = 0, przegrane = 0, remisy = 0;
+			for (int i = 1; i <= liczbaGier; i++)
 			{
-				printf("Gra %d z %d\tWynik: %dW %dP\n", i, liczbaGier, wygrane, przegrane);
+				printf("Gra %d z %d\tWynik: %dW %dP %dR\n", i, liczbaGier, wygrane, przegrane, remisy);
 				puts("Wcisnij dowolny klawisz by zaczac aktualna gre");
 				if (getchar() != '\n')
 					WyczyscWejscie();
@@ -115,9 +116,11 @@ int main()
 					break;
 				case 'R':
 				default:
+					remisy++;
 					break;
 				}
 			}
+			printf("Twoj wynik po %d grach to %dW %dP %dR\n", liczbaGier, wygrane, przegrane, remisy);
         }
         else if (decyzja == '3')
         {
@@ -130,7 +133,7 @@ int main()
                 char szybkosc = getchar();
 				if (szybkosc != '\n')
 					WyczyscWejscie();
-                switch (szybkosc)
+                switch (szybkosc) //Ustawinei szybkosci w milisekundach
                 {
                     case '0':
                         opoznienieRozgrywki = 1;
@@ -168,7 +171,7 @@ int Losowa(int mini, int maxi)
 	return mini + rand() % (maxi - mini);
 }
 
-void WyczyscWejscie()
+void WyczyscWejscie() //Wyjmuje znaki z wejscia az napotka nowoa linie lub koniec pliku
 {
     int ch;
     while ((ch = getchar()) != '\n' && ch != EOF);
@@ -177,19 +180,19 @@ void WyczyscWejscie()
 
 char Graj(int delay)
 {
-	struct Karta gracz[ROZMIAR_TALII];
-	struct Karta komputer[ROZMIAR_TALII];
-	int liczbaKartGracza = ROZMIAR_TALII / 2, liczbaKartKomputera = ROZMIAR_TALII / 2;
-    struct Karta stol[52];
-    int liczbaKartNaStole = 0;
-    char kartaS1[20], kartaS2[20];
+	struct Karta gracz[ROZMIAR_TALII]; //Tablica na karty gracza
+	struct Karta komputer[ROZMIAR_TALII]; //Tablica na karty komputera
+	int liczbaKartGracza = ROZMIAR_TALII / 2, liczbaKartKomputera = ROZMIAR_TALII / 2; //Licznik do dokladania kart
+    struct Karta stol[52]; //Buffor na wykladanie kart
+    int liczbaKartNaStole = 0; //Licznik do zwracania kart ze stolu
+    char kartaS1[20], kartaS2[20]; //Tablice niezbedne do generowania nazw kart
     bool autoplay = false;
+	int runda = 1; //Numer aktualnej rundy
     
     puts("Dowolny klawisz wyklada karte");
-
-	Rozdaj(gracz, komputer);
+	Rozdaj(gracz, komputer); //Przygotowuje rozgrywke
     
-    while (true)
+    while (runda++ <= 5000)
     {
 		if (autoplay)
         #ifdef _WIN32
@@ -202,13 +205,13 @@ char Graj(int delay)
 			char input = getchar();
 			if (input != '\n')
 				WyczyscWejscie();
-			if (input == 'q')
+			if (input == 'q') //Bonusowe wyjscie
 				exit(0);
-			if (input == 'f' || input == 'a')
+			if (input == 'f' || input == 'a') //Wlaczenie trybu auto
 				autoplay = true;
 		}
 		
-		if (liczbaKartGracza == 0 && liczbaKartKomputera == 0)
+		if (liczbaKartGracza == 0 && liczbaKartKomputera == 0) //Gdyby byla ciagla wojna
 		{
 			puts("Remis\n");
 			return 'R';
@@ -228,31 +231,31 @@ char Graj(int delay)
         struct Karta wystawionaK = komputer[0];
         liczbaKartGracza--;
         liczbaKartKomputera--;
-        memmove(gracz, gracz+1, sizeof(struct Karta)*liczbaKartGracza);
+        memmove(gracz, gracz+1, sizeof(struct Karta)*liczbaKartGracza); //Przesiniecie kart w lewo
         memmove(komputer, komputer+1, sizeof(struct Karta)*liczbaKartKomputera);
         
-        printf("%s %-14d%s %d\n%-20s%s\n", "Gracz", liczbaKartGracza, "Komputer", liczbaKartKomputera, KartaToString(wystawionaG, kartaS1), KartaToString(wystawionaK, kartaS2));
+		printf("%s %-14d%s %d\n%-20s%s\n", "Gracz", liczbaKartGracza, "Komputer", liczbaKartKomputera, KartaToString(wystawionaG, kartaS1), KartaToString(wystawionaK, kartaS2)); //Wyswiela kto ma ile kart (po aktualnym wystawieniu) oraz wystawione karty
         
-        stol[liczbaKartNaStole++] = wystawionaG;
+        stol[liczbaKartNaStole++] = wystawionaG; //Dolozenie kart na stol
         stol[liczbaKartNaStole++] = wystawionaK;
         
         if (wystawionaG.wartosc > wystawionaK.wartosc)
         {
             puts("Wygrywasz\n");
-            while (liczbaKartNaStole > 0)
+            while (liczbaKartNaStole > 0) //Zdjecie wszystkich kart ze stolu i danie graczowi
                 gracz[liczbaKartGracza++] = stol[--liczbaKartNaStole];
         }
         if (wystawionaG.wartosc < wystawionaK.wartosc)
         {
             puts("Komputer wygrywa\n");
-            while (liczbaKartNaStole > 0)
+            while (liczbaKartNaStole > 0) //Zdjecie wszystkich kart ze stolu i danie komputerowi
                 komputer[liczbaKartKomputera++] = stol[--liczbaKartNaStole];
         }
         if (wystawionaG.wartosc == wystawionaK.wartosc)
         {
             puts("Wojna!\n");
 
-			if (liczbaKartGracza == 0 && liczbaKartKomputera == 0)
+			if (liczbaKartGracza == 0 && liczbaKartKomputera == 0) //Gdyby byla ciagla wojna
 			{
 				puts("Remis\n");
 				return 'R';
@@ -267,19 +270,20 @@ char Graj(int delay)
                 puts("Wygrales gre\n");
 				return 'G';
             }
-            stol[liczbaKartNaStole++] = gracz[0];
+            stol[liczbaKartNaStole++] = gracz[0]; //Dolozenie kart na stol
             stol[liczbaKartNaStole++] = komputer[0];
             liczbaKartGracza--;
             liczbaKartKomputera--;
-            memmove(gracz, gracz+1, sizeof(struct Karta)*liczbaKartGracza);
+            memmove(gracz, gracz+1, sizeof(struct Karta)*liczbaKartGracza); //Przesiniecie kart w lewo
             memmove(komputer, komputer+1, sizeof(struct Karta)*liczbaKartKomputera);
         }
     }
 
-	return 'R';
+	puts("Minelo 5 000 rund, wiec gra konczy sie remisem\n");
+	return 'R'; //Po 5000 rund jest remis
 }
 
-void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALII])
+void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALII]) //Przydziela 1. polowe tali graczowi1 i 2. graczowi2
 {
     struct Karta talia[ROZMIAR_TALII];
     Resetuj(talia);
@@ -295,11 +299,16 @@ void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALI
     }
 }
 
-void Resetuj(struct Karta *talia)
+void Resetuj(struct Karta *talia) //Przypisuje wszystkim kartom kolejne wartosci. Wynikem jest cala talia ulozona po koleji
 {
+	if (ROZMIAR_TALII != 52)
+	{
+		puts("Niestandardowy rozmiar talii!");
+		exit(2);
+	}
 	struct Karta* strzalka = talia;
 	for (int i = 1; i <= 4; i++)
-		for (int j = 2; j <= as; j++)
+		for (int j = dwojka; j <= as; j++)
 		{
 			strzalka->kolor = i;
 			strzalka->wartosc = j;
@@ -307,7 +316,7 @@ void Resetuj(struct Karta *talia)
 		}
 }
 
-void Tasuj(struct Karta *talia)
+void Tasuj(struct Karta *talia) //Fisher–Yates shuffle
 {
 	for (int i = ROZMIAR_TALII - 1; i>0; i--)
 	{
@@ -373,15 +382,9 @@ const char* WartoscToString(enum Wartosci wartosc)
 
 char * KartaToString(struct Karta karta ,char nazwa[])
 {
-//    static char wynik[20];
-//    strcpy(wynik, WartoscToString(karta.wartosc));
-//    strcat(wynik, " ");
-//    strcat(wynik, KolorToString(karta.kolor));
-//
-//    return wynik;
     strcpy(nazwa, WartoscToString(karta.wartosc));
     strcat(nazwa, " ");
     strcat(nazwa, KolorToString(karta.kolor));
     
-    return nazwa;
+    return nazwa; //Pozwala odrazu uzyc
 }
