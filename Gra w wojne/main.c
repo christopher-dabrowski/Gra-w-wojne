@@ -73,7 +73,8 @@ int main()
              "Aby zagrac kilka partii wybierz: 2\n"
              "Aby zmienic szybkosc trybu automatycznego wybierz: 3\n");
         decyzja = getchar();
-        WyczyscWejscie();
+		if (decyzja != '\n')
+			WyczyscWejscie();
         
         if (decyzja == '1')
         {
@@ -81,8 +82,22 @@ int main()
         }
         else if(decyzja == '2')
         {
-            puts("Not implemented");
-            return 1;
+			bool nieWczytano;
+			int liczbaGier = 0;
+			do
+			{
+				nieWczytano = false;
+				printf("Podaj liczbe gier: ");
+				scanf("%d", &liczbaGier);
+				if (liczbaGier <= 0)
+				{
+					nieWczytano = true;
+					WyczyscWejscie();
+					puts("Nieprawidlowa liczba gier. Sproboj ponownie");
+				}
+
+			} while (nieWczytano);
+				
         }
         else if (decyzja == '3')
         {
@@ -93,7 +108,8 @@ int main()
                 nieWczytano = false;
                 puts("0 - Bardzo szybko\n1 - Szybko\n2 - Normalnie\n3 - wolno");
                 char szybkosc = getchar();
-                WyczyscWejscie();
+				if (szybkosc != '\n')
+					WyczyscWejscie();
                 switch (szybkosc)
                 {
                     case '0':
@@ -167,7 +183,8 @@ char Graj(int delay)
 		else
 		{
 			char input = getchar();
-            //WyczyscWejscie();
+			if (input != '\n')
+				WyczyscWejscie();
 			if (input == 'q')
 				exit(0);
 			if (input == 'f' || input == 'a')
