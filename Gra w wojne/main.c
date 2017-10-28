@@ -95,9 +95,29 @@ int main()
 					WyczyscWejscie();
 					puts("Nieprawidlowa liczba gier. Sproboj ponownie");
 				}
-
+				else
+					WyczyscWejscie();
 			} while (nieWczytano);
-				
+			
+			for (int i = 1, wygrane = 0, przegrane = 0; i <= liczbaGier; i++)
+			{
+				printf("Gra %d z %d\tWynik: %dW %dP\n", i, liczbaGier, wygrane, przegrane);
+				puts("Wcisnij dowolny klawisz by zaczac aktualna gre");
+				if (getchar() != '\n')
+					WyczyscWejscie();
+				switch (Graj(opoznienieRozgrywki))
+				{
+				case 'G' :
+					wygrane++;
+					break;
+				case 'K':
+					przegrane++;
+					break;
+				case 'R':
+				default:
+					break;
+				}
+			}
         }
         else if (decyzja == '3')
         {
@@ -139,10 +159,7 @@ int main()
             ponow = true;
         }
     } while (ponow);
-    
-    
-    
-	
+
 	return 0;
 }
 
@@ -193,17 +210,17 @@ char Graj(int delay)
 		
 		if (liczbaKartGracza == 0 && liczbaKartKomputera == 0)
 		{
-			puts("Remis");
+			puts("Remis\n");
 			return 'R';
 		}
 		if (liczbaKartGracza == 0)
 		{
-			puts("Przegrales gre");
+			puts("Przegrales gre\n");
 			return 'K';
 		}
 		if (liczbaKartKomputera == 0)
 		{
-			puts("Wygrales gre");
+			puts("Wygrales gre\n");
 			return 'G';
 		}
 
@@ -237,17 +254,17 @@ char Graj(int delay)
 
 			if (liczbaKartGracza == 0 && liczbaKartKomputera == 0)
 			{
-				puts("Remis");
+				puts("Remis\n");
 				return 'R';
 			}
             if (liczbaKartGracza == 0)
             {
-                puts("Przegrales gre");
+                puts("Przegrales gre\n");
                 return 'K';
             }
             if (liczbaKartKomputera == 0)
             {
-                puts("Wygrales gre");
+                puts("Wygrales gre\n");
 				return 'G';
             }
             stol[liczbaKartNaStole++] = gracz[0];
@@ -368,8 +385,3 @@ char * KartaToString(struct Karta karta ,char nazwa[])
     
     return nazwa;
 }
-
-
-
-
-
