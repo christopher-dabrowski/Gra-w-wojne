@@ -52,7 +52,6 @@ const char* WartoscToString(enum Wartosci wartosc);
 char* KartaToString(struct Karta karta ,char nazwa[]);
 void Rozdaj(struct Karta gracz1[ROZMIAR_TALII], struct Karta gracz2[ROZMIAR_TALII]);
 char Graj(int delay);
-void PrzesunWLewo(struct Karta tab[], int rozmiar);
 void WyczyscWejscie(void);
 
 
@@ -195,8 +194,8 @@ char Graj(int delay)
         struct Karta wystawionaK = komputer[0];
         liczbaKartGracza--;
         liczbaKartKomputera--;
-        PrzesunWLewo(gracz, ROZMIAR_TALII);
-        PrzesunWLewo(komputer, ROZMIAR_TALII);
+        memmove(gracz, gracz+1, sizeof(struct Karta)*liczbaKartGracza);
+        memmove(komputer, komputer+1, sizeof(struct Karta)*liczbaKartKomputera);
         
         printf("%s %-14d%s %d\n%-20s%s\n", "Gracz", liczbaKartGracza, "Komputer", liczbaKartKomputera, KartaToString(wystawionaG, kartaS1), KartaToString(wystawionaK, kartaS2));
         
@@ -238,8 +237,8 @@ char Graj(int delay)
             stol[liczbaKartNaStole++] = komputer[0];
             liczbaKartGracza--;
             liczbaKartKomputera--;
-            PrzesunWLewo(gracz, ROZMIAR_TALII);
-            PrzesunWLewo(komputer, ROZMIAR_TALII);
+            memmove(gracz, gracz+1, sizeof(struct Karta)*liczbaKartGracza);
+            memmove(komputer, komputer+1, sizeof(struct Karta)*liczbaKartKomputera);
         }
     }
 
@@ -283,12 +282,6 @@ void Tasuj(struct Karta *talia)
 		talia[i] = talia[j];
 		talia[j] = tmp;
 	}
-}
-
-void PrzesunWLewo(struct Karta tab[], int rozmiar)
-{
-    for (int i=1; i<rozmiar; i++)
-        tab[i-1] = tab[i];
 }
 
 const char* KolorToString(enum Kolory kolor)
