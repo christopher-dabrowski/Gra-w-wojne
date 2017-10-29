@@ -4,9 +4,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-#ifdef _WIN32
+#ifdef _WIN32 //Wersja na Windowsa
 #include <windows.h>
-#else
+#else //Wersja na Maca i Linuxsa
 #include <unistd.h>
 #endif
 //const int ROZMIAR_TALII = 52;
