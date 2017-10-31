@@ -129,7 +129,7 @@ int main()
             do
             {
                 nieWczytano = false;
-                puts("0 - Bardzo szybko\n1 - Szybko\n2 - Normalnie\n3 - wolno");
+                puts("0 - Bardzo szybko\n1 - Szybko\n2 - Normalnie\n3 - Wolno");
                 char szybkosc = getchar();
 				if (szybkosc != '\n')
 					WyczyscWejscie();
@@ -187,12 +187,11 @@ char Graj(int delay)
     int liczbaKartNaStole = 0; //Licznik do zwracania kart ze stolu
     char kartaS1[20], kartaS2[20]; //Tablice niezbedne do generowania nazw kart
     bool autoplay = false;
-	int runda = 1; //Numer aktualnej rundy
     
     puts("Dowolny klawisz wyklada karte");
 	Rozdaj(gracz, komputer); //Przygotowuje rozgrywke
     
-    while (runda++ <= 5000)
+    for (int runda = 1; runda <= 5000; runda++)
     {
 		if (autoplay)
         #ifdef _WIN32
@@ -359,7 +358,7 @@ const char* WartoscToString(enum Wartosci wartosc)
         case szustka:
             return "Szustka";
         case siudemka:
-            return "Siudemka";
+            return "Siodemka";
         case osemka:
             return "Osemka";
         case dziewiatka:
