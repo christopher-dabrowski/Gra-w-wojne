@@ -188,8 +188,8 @@ char Graj(int delay)
     char kartaS1[20], kartaS2[20]; //Tablice niezbedne do generowania nazw kart
     bool autoplay = false;
     
-    puts("Dowolny klawisz wyklada karte");
 	Rozdaj(gracz, komputer); //Przygotowuje rozgrywke
+    puts("Dowolny klawisz wyklada karte");
     
     for (int runda = 1; runda <= 5000; runda++)
     {
