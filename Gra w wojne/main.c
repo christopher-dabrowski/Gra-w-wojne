@@ -11,7 +11,7 @@
 #endif
 //const int ROZMIAR_TALII = 52;
 #define ROZMIAR_TALII 52
-#pragma warning(disable : 4996)  
+
 
 enum Kolory
 {
